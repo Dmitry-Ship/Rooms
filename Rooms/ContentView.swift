@@ -11,11 +11,11 @@ import Combine
 
 struct ContentView: View {
     @ObservedObject var store = RoomStore()
+
+    @State private var isCreateViewOpen = false
     
-    func addRoom() {
-        withAnimation {
-            store.rooms.append(Room(name: "Elephant Room", capacity: 2000))
-        }
+    func openCreateView() {
+        self.isCreateViewOpen.toggle()
     }
     
     func deleteRoom(at offsets: IndexSet) {
@@ -30,8 +30,10 @@ struct ContentView: View {
         NavigationView {
             List {
                 Section {
-                    Button(action: addRoom) {
+                    Button(action: openCreateView) {
                           Text("Add Room")
+                    }.sheet(isPresented: $isCreateViewOpen) {
+                        CreateRoom(store: self.store)
                     }
                 }
    
@@ -70,23 +72,3 @@ struct ContentView_Previews: PreviewProvider {
 }
 #endif
 
-struct RoomCell: View {
-    let room: Room
-    
-    var body: some View {
-        NavigationLink(destination: RoomDetail(room: room)) {
-            Image(room.thumbnailName)
-                .resizable()
-                .frame(width: 50.0, height: 50.0)
-                .cornerRadius(8)
-            VStack(alignment: .leading) {
-                Text(room.name)
-                Text("\(room.capacity) people")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                
-                
-            }
-        }
-    }
-}
